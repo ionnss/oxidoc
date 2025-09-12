@@ -8,7 +8,7 @@
 
 ## 📖 About
 
-**Oxidoc** is a Rust-native library and CLI tool for converting diverse file formats into **plain text** or **Markdown** — optimized for **AI training** and data preprocessing.
+**Oxidoc** is a Rust-native library and CLI tool for converting diverse file formats into **JSONL** or **TXT** — optimized for **AI training** and data preprocessing.
 
 It draws inspiration from tools like Docling, but is built entirely in Rust, focusing on speed, safety, and flexibility.
 
