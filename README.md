@@ -1,6 +1,6 @@
 
 <div align="center">
-  <img src="/Users/ions/oxidoc/assets/logo.png" alt="Oxidoc Logo" width="300"/>
+  <img src="/assets/logo.png" alt="Oxidoc Logo" width="300"/>
   <h3>Rust-powered document distillation.</h3>
 </div>
 
