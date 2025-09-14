@@ -10,12 +10,7 @@
 
   [![Rust](https://img.shields.io/badge/rust-stable-orange.svg)](https://www.rust-lang.org/)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![GitHub release](https://img.shields.io/github/release/ionnss/oxidoc.svg)](https://github.com/ionnss/oxidoc/releases)
-  [![Release](https://github.com/ionnss/oxidoc/actions/workflows/release.yml/badge.svg)](https://github.com/ionnss/oxidoc/actions/workflows/release.yml)
-  
-  [![Build Status](https://img.shields.io/github/actions/workflow/status/ionnss/oxidoc/ci.yml?branch=master)](https://github.com/ionnss/oxidoc/actions)
-  [![Crates.io](https://img.shields.io/crates/v/oxidoc)](https://crates.io/crates/oxidoc)
-  [![Downloads](https://img.shields.io/crates/d/oxidoc)](https://crates.io/crates/oxidoc)
+  [![Build Status](https://img.shields.io/github/actions/workflow/status/ionnss/oxidoc/rust.yml?branch=master)](https://github.com/ionnss/oxidoc/actions)
   [![Contributors](https://img.shields.io/github/contributors/ionnss/oxidoc)](https://github.com/ionnss/oxidoc/graphs/contributors)
 
   [![GitHub Stars](https://img.shields.io/github/stars/ionnss/oxidoc?style=social)](https://github.com/ionnss/oxidoc/stargazers)
