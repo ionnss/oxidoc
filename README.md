@@ -8,8 +8,8 @@
 
   <br>
 
-  [![Rust](https://img.shields.io/badge/rust-stable-orange.svg)](https://www.rust-lang.org/)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Rust](https://img.shields.io/badge/rust-stable-blue.svg)](https://www.rust-lang.org/)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
   [![Build Status](https://img.shields.io/github/actions/workflow/status/ionnss/oxidoc/rust.yml?branch=master)](https://github.com/ionnss/oxidoc/actions)
   [![Contributors](https://img.shields.io/github/contributors/ionnss/oxidoc)](https://github.com/ionnss/oxidoc/graphs/contributors)
 
