@@ -1,33 +1,15 @@
 // html.rs
 
-use serde::{Serialize, Deserialize};
 use scraper::{Html, Selector};
 use std::fs;
 use std::path::Path;
+use crate::parsers::documents_types::DocumentElement;
 
-#[derive(Serialize, Deserialize, Debug)]
-pub enum HtmlElement {
-    // htmldocument metadata (from <head>)
-    HtmldocumentTitle { text: String },
-    HtmldocumentDescription { text: String },
-    HtmldocumentKeywords { text: String },
-    HtmldocumentAuthor { text: String },
-    HtmldocumentLanguage { text: String },
-    
-    // Content elements (from <body>)
-    Heading { level: u8, text: String},
-    Paragraph { text: String},
-    Blockquote { text: String},
-    List { items: Vec<String>, ordered: bool},
-    Table { headers: Vec<String>, rows: Vec<Vec<String>>},
-    Code { code: String, language: Option<String>, inline: bool},
-    Link { text: String, url: String},
-    ImageDescription { text: String},
-}
+
 
 
 // Main parsing function
-pub fn parse_html_file(path: &Path) -> Result<Vec<HtmlElement>, Box<dyn std::error::Error>> {
+pub fn parse_html_file(path: &Path) -> Result<Vec<DocumentElement>, Box<dyn std::error::Error>> {
     println!("\nOxidoc HTML Parser");
     println!("Parsing HTML file: {:?}", path);
     
@@ -56,7 +38,7 @@ pub fn parse_html_file(path: &Path) -> Result<Vec<HtmlElement>, Box<dyn std::err
 }
 
 // Display detailed parsing results
-fn display_parsing_results(elements: &[HtmlElement]) {
+fn display_parsing_results(elements: &[DocumentElement]) {
     println!("\nParsing Results:");
     
     let mut metadata_count = 0;
@@ -71,19 +53,19 @@ fn display_parsing_results(elements: &[HtmlElement]) {
     
     for element in elements {
         match element {
-            HtmlElement::HtmldocumentTitle { .. } |
-            HtmlElement::HtmldocumentDescription { .. } |
-            HtmlElement::HtmldocumentKeywords { .. } |
-            HtmlElement::HtmldocumentAuthor { .. } |
-            HtmlElement::HtmldocumentLanguage { .. } => metadata_count += 1,
-            HtmlElement::Heading { .. } => headings_count += 1,
-            HtmlElement::Paragraph { .. } => paragraphs_count += 1,
-            HtmlElement::List { .. } => lists_count += 1,
-            HtmlElement::Table { .. } => tables_count += 1,
-            HtmlElement::Code { .. } => code_count += 1,
-            HtmlElement::Link { .. } => links_count += 1,
-            HtmlElement::ImageDescription { .. } => images_count += 1,
-            HtmlElement::Blockquote { .. } => blockquotes_count += 1,
+            DocumentElement::HtmldocumentTitle { .. } |
+            DocumentElement::HtmldocumentDescription { .. } |
+            DocumentElement::HtmldocumentKeywords { .. } |
+            DocumentElement::HtmldocumentAuthor { .. } |
+            DocumentElement::HtmldocumentLanguage { .. } => metadata_count += 1,
+            DocumentElement::HtmlHeading { .. } => headings_count += 1,
+            DocumentElement::HtmlParagraph { .. } => paragraphs_count += 1,
+            DocumentElement::HtmlList { .. } => lists_count += 1,
+            DocumentElement::HtmlTable { .. } => tables_count += 1,
+            DocumentElement::HtmlCode { .. } => code_count += 1,
+            DocumentElement::HtmlLink { .. } => links_count += 1,
+            DocumentElement::HtmlImageDescription { .. } => images_count += 1,
+            DocumentElement::HtmlBlockquote { .. } => blockquotes_count += 1,
         }
     }
     
@@ -109,32 +91,32 @@ fn display_parsing_results(elements: &[HtmlElement]) {
 //-------------------------------------------------
 
 // Main metadata extraction function
-fn extract_metadata(document: &Html) -> Vec<HtmlElement> {
+fn extract_metadata(document: &Html) -> Vec<DocumentElement> {
     let mut metadata = Vec::new();
     
     // Extract title
     if let Some(title) = extract_title(document) {
-        metadata.push(HtmlElement::HtmldocumentTitle { text: title });
+        metadata.push(DocumentElement::HtmldocumentTitle { text: title });
     }
     
     // Extract description
     if let Some(description) = extract_meta_description(document) {
-        metadata.push(HtmlElement::HtmldocumentDescription { text: description });
+        metadata.push(DocumentElement::HtmldocumentDescription { text: description });
     }
     
     // Extract keywords
     if let Some(keywords) = extract_meta_keywords(document) {
-        metadata.push(HtmlElement::HtmldocumentKeywords { text: keywords });
+        metadata.push(DocumentElement::HtmldocumentKeywords { text: keywords });
     }
     
     // Extract author
     if let Some(author) = extract_meta_author(document) {
-        metadata.push(HtmlElement::HtmldocumentAuthor { text: author });
+        metadata.push(DocumentElement::HtmldocumentAuthor { text: author });
     }
     
     // Extract language
     if let Some(language) = extract_document_language(document) {
-        metadata.push(HtmlElement::HtmldocumentLanguage { text: language });
+        metadata.push(DocumentElement::HtmldocumentLanguage { text: language });
     }
     
     metadata
@@ -204,7 +186,7 @@ fn extract_document_language(document: &Html) -> Option<String> {
 //---------------------------------------------
 
 // Main element extraction function
-pub fn extract_elements(htmldocument: &Html) -> Vec<HtmlElement> {
+pub fn extract_elements(htmldocument: &Html) -> Vec<DocumentElement> {
     let mut elements = Vec::new();
 
     // Extract different types of elements
@@ -223,7 +205,7 @@ pub fn extract_elements(htmldocument: &Html) -> Vec<HtmlElement> {
 }
 
 // Extract headings (h1, h2, h3, h4, h5, h6)
-pub fn extract_headings(htmldocument: &Html) -> Vec<HtmlElement> {
+pub fn extract_headings(htmldocument: &Html) -> Vec<DocumentElement> {
     // Vector to store the headings
     let mut headings = Vec::new();
     // Selector to find the headings
@@ -238,40 +220,40 @@ pub fn extract_headings(htmldocument: &Html) -> Vec<HtmlElement> {
 
         // If the heading text is not empty, add it to the vector
         if !text.is_empty() {
-            headings.push(HtmlElement::Heading { level, text });
+            headings.push(DocumentElement::HtmlHeading { level, text });
         }
     }
     // Return the headings
     headings
 }
 
-pub fn extract_paragraphs(htmldocument:&Html) -> Vec<HtmlElement> {
+pub fn extract_paragraphs(htmldocument:&Html) -> Vec<DocumentElement> {
     let mut paragraphs= Vec::new();
     let paragraph_selector = Selector::parse("p").unwrap();
 
     for paragraph in htmldocument.select(&paragraph_selector) {
         let text = paragraph.text().collect::<String>().trim().to_string();
         if !text.is_empty() {
-            paragraphs.push(HtmlElement::Paragraph { text });
+            paragraphs.push(DocumentElement::HtmlParagraph { text });
         }
     }
     paragraphs
 }
 
-pub fn extract_blockquotes(htmldocument: &Html) -> Vec<HtmlElement> {
+pub fn extract_blockquotes(htmldocument: &Html) -> Vec<DocumentElement> {
     let mut blockquotes= Vec::new();
     let blockquote_selector = Selector::parse("blockquote").unwrap();
 
     for blockquote in htmldocument.select(&blockquote_selector) {
         let text = blockquote.text().collect::<String>().trim().to_string();
         if !text.is_empty() {
-            blockquotes.push(HtmlElement::Blockquote { text });
+            blockquotes.push(DocumentElement::HtmlBlockquote { text });
         }
     }
     blockquotes
 }
 
-pub fn extract_lists(htmldocument: &Html) -> Vec<HtmlElement> {
+pub fn extract_lists(htmldocument: &Html) -> Vec<DocumentElement> {
     let mut lists = Vec::new();
 
     // Extract unordered lists
@@ -285,7 +267,7 @@ pub fn extract_lists(htmldocument: &Html) -> Vec<HtmlElement> {
             .collect();
         
         if !items.is_empty() {
-            lists.push(HtmlElement::List { items, ordered: false });
+            lists.push(DocumentElement::HtmlList { items, ordered: false });
         }
     }
     
@@ -300,7 +282,7 @@ pub fn extract_lists(htmldocument: &Html) -> Vec<HtmlElement> {
             .collect();
         
         if !items.is_empty() {
-            lists.push(HtmlElement::List { items, ordered: true });
+            lists.push(DocumentElement::HtmlList { items, ordered: true });
         }
     }
     
@@ -308,7 +290,7 @@ pub fn extract_lists(htmldocument: &Html) -> Vec<HtmlElement> {
 }
 
 // Extract tables
-fn extract_tables(htmldocument: &Html) -> Vec<HtmlElement> {
+fn extract_tables(htmldocument: &Html) -> Vec<DocumentElement> {
     let mut tables = Vec::new();
     let table_selector = Selector::parse("table").unwrap();
     
@@ -335,7 +317,7 @@ fn extract_tables(htmldocument: &Html) -> Vec<HtmlElement> {
         }
         
         if !headers.is_empty() || !rows.is_empty() {
-            tables.push(HtmlElement::Table { headers, rows });
+            tables.push(DocumentElement::HtmlTable { headers, rows });
         }
     }
     
@@ -343,7 +325,7 @@ fn extract_tables(htmldocument: &Html) -> Vec<HtmlElement> {
 }
 
 // Extract code blocks
-fn extract_code_blocks(htmldocument: &Html) -> Vec<HtmlElement> {
+fn extract_code_blocks(htmldocument: &Html) -> Vec<DocumentElement> {
     let mut code_blocks = Vec::new();
     let pre_selector = Selector::parse("pre").unwrap();
     
@@ -355,7 +337,7 @@ fn extract_code_blocks(htmldocument: &Html) -> Vec<HtmlElement> {
             let code = code_elem.text().collect::<String>();
             let language = extract_code_language(&code_elem);
             
-            code_blocks.push(HtmlElement::Code { 
+            code_blocks.push(DocumentElement::HtmlCode { 
                 code, 
                 language, 
                 inline: false 
@@ -363,7 +345,7 @@ fn extract_code_blocks(htmldocument: &Html) -> Vec<HtmlElement> {
         } else {
             // No <code> inside <pre>, just use the pre content
             let code = pre_element.text().collect::<String>();
-            code_blocks.push(HtmlElement::Code { 
+            code_blocks.push(DocumentElement::HtmlCode { 
                 code, 
                 language: None, 
                 inline: false 
@@ -375,7 +357,7 @@ fn extract_code_blocks(htmldocument: &Html) -> Vec<HtmlElement> {
 }
 
 // Extract inline code
-fn extract_inline_codes(htmldocument: &Html) -> Vec<HtmlElement> {
+fn extract_inline_codes(htmldocument: &Html) -> Vec<DocumentElement> {
     let mut inline_codes = Vec::new();
     let code_selector = Selector::parse("code").unwrap();
     
@@ -390,7 +372,7 @@ fn extract_inline_codes(htmldocument: &Html) -> Vec<HtmlElement> {
         let code = element.text().collect::<String>().trim().to_string();
         
         if !code.is_empty() {
-            inline_codes.push(HtmlElement::Code { 
+            inline_codes.push(DocumentElement::HtmlCode { 
                 code, 
                 language: None, 
                 inline: true 
@@ -402,7 +384,7 @@ fn extract_inline_codes(htmldocument: &Html) -> Vec<HtmlElement> {
 }
 
 // Extract links
-fn extract_links(htmldocument: &Html) -> Vec<HtmlElement> {
+fn extract_links(htmldocument: &Html) -> Vec<DocumentElement> {
     let mut links = Vec::new();
     let link_selector = Selector::parse("a[href]").unwrap();
     
@@ -411,7 +393,7 @@ fn extract_links(htmldocument: &Html) -> Vec<HtmlElement> {
         let text = element.text().collect::<String>().trim().to_string();
         
         if !url.is_empty() && !text.is_empty() {
-            links.push(HtmlElement::Link { text, url });
+            links.push(DocumentElement::HtmlLink { text, url });
         }
     }
     
@@ -419,7 +401,7 @@ fn extract_links(htmldocument: &Html) -> Vec<HtmlElement> {
 }
 
 // Extract image descriptions (alt text and captions)
-fn extract_image_descriptions(htmldocument: &Html) -> Vec<HtmlElement> {
+fn extract_image_descriptions(htmldocument: &Html) -> Vec<DocumentElement> {
     let mut image_descriptions = Vec::new();
     let img_selector = Selector::parse("img").unwrap();
     
@@ -427,7 +409,7 @@ fn extract_image_descriptions(htmldocument: &Html) -> Vec<HtmlElement> {
         // Extract alt text
         if let Some(alt) = element.value().attr("alt") {
             if !alt.trim().is_empty() && alt != "image" && alt != "photo" {
-                image_descriptions.push(HtmlElement::ImageDescription { 
+                image_descriptions.push(DocumentElement::HtmlImageDescription { 
                     text: alt.to_string() 
                 });
             }
@@ -442,7 +424,7 @@ fn extract_image_descriptions(htmldocument: &Html) -> Vec<HtmlElement> {
                     if caption.parent().map_or(false, |p| p == parent) {
                         let caption_text = caption.text().collect::<String>().trim().to_string();
                         if !caption_text.is_empty() {
-                            image_descriptions.push(HtmlElement::ImageDescription { 
+                            image_descriptions.push(DocumentElement::HtmlImageDescription { 
                                 text: caption_text 
                             });
                         }

@@ -4,5 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+chrono = "0.4.42"
 scraper = "0.24.0"
 serde = { version = "1.0.220", features = ["derive"] }
+serde_json = "1.0.145"
