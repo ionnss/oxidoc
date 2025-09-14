@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 scraper = "0.24.0"
-serde = "1.0.220"
+serde = { version = "1.0.220", features = ["derive"] }
