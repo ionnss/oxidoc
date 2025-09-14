@@ -53,19 +53,19 @@ fn display_parsing_results(elements: &[DocumentElement]) {
     
     for element in elements {
         match element {
-            DocumentElement::HtmldocumentTitle { .. } |
-            DocumentElement::HtmldocumentDescription { .. } |
-            DocumentElement::HtmldocumentKeywords { .. } |
-            DocumentElement::HtmldocumentAuthor { .. } |
-            DocumentElement::HtmldocumentLanguage { .. } => metadata_count += 1,
-            DocumentElement::HtmlHeading { .. } => headings_count += 1,
-            DocumentElement::HtmlParagraph { .. } => paragraphs_count += 1,
-            DocumentElement::HtmlList { .. } => lists_count += 1,
-            DocumentElement::HtmlTable { .. } => tables_count += 1,
-            DocumentElement::HtmlCode { .. } => code_count += 1,
-            DocumentElement::HtmlLink { .. } => links_count += 1,
-            DocumentElement::HtmlImageDescription { .. } => images_count += 1,
-            DocumentElement::HtmlBlockquote { .. } => blockquotes_count += 1,
+            DocumentElement::Title { .. } |
+            DocumentElement::Description { .. } |
+            DocumentElement::Keywords { .. } |
+            DocumentElement::Author { .. } |
+            DocumentElement::Language { .. } => metadata_count += 1,
+            DocumentElement::Heading { .. } => headings_count += 1,
+            DocumentElement::Paragraph { .. } => paragraphs_count += 1,
+            DocumentElement::List { .. } => lists_count += 1,
+            DocumentElement::Table { .. } => tables_count += 1,
+            DocumentElement::Code { .. } => code_count += 1,
+            DocumentElement::Link { .. } => links_count += 1,
+            DocumentElement::Image { .. } => images_count += 1,
+            DocumentElement::Blockquote { .. } => blockquotes_count += 1,
         }
     }
     
@@ -96,27 +96,27 @@ fn extract_metadata(document: &Html) -> Vec<DocumentElement> {
     
     // Extract title
     if let Some(title) = extract_title(document) {
-        metadata.push(DocumentElement::HtmldocumentTitle { text: title });
+        metadata.push(DocumentElement::Title { text: title });
     }
     
     // Extract description
     if let Some(description) = extract_meta_description(document) {
-        metadata.push(DocumentElement::HtmldocumentDescription { text: description });
+        metadata.push(DocumentElement::Description { text: description });
     }
     
     // Extract keywords
     if let Some(keywords) = extract_meta_keywords(document) {
-        metadata.push(DocumentElement::HtmldocumentKeywords { text: keywords });
+        metadata.push(DocumentElement::Keywords { text: keywords });
     }
     
     // Extract author
     if let Some(author) = extract_meta_author(document) {
-        metadata.push(DocumentElement::HtmldocumentAuthor { text: author });
+        metadata.push(DocumentElement::Author { text: author });
     }
     
     // Extract language
     if let Some(language) = extract_document_language(document) {
-        metadata.push(DocumentElement::HtmldocumentLanguage { text: language });
+        metadata.push(DocumentElement::Language { text: language });
     }
     
     metadata
@@ -220,7 +220,7 @@ pub fn extract_headings(htmldocument: &Html) -> Vec<DocumentElement> {
 
         // If the heading text is not empty, add it to the vector
         if !text.is_empty() {
-            headings.push(DocumentElement::HtmlHeading { level, text });
+            headings.push(DocumentElement::Heading { level, text });
         }
     }
     // Return the headings
@@ -234,7 +234,7 @@ pub fn extract_paragraphs(htmldocument:&Html) -> Vec<DocumentElement> {
     for paragraph in htmldocument.select(&paragraph_selector) {
         let text = paragraph.text().collect::<String>().trim().to_string();
         if !text.is_empty() {
-            paragraphs.push(DocumentElement::HtmlParagraph { text });
+            paragraphs.push(DocumentElement::Paragraph { text });
         }
     }
     paragraphs
@@ -247,7 +247,7 @@ pub fn extract_blockquotes(htmldocument: &Html) -> Vec<DocumentElement> {
     for blockquote in htmldocument.select(&blockquote_selector) {
         let text = blockquote.text().collect::<String>().trim().to_string();
         if !text.is_empty() {
-            blockquotes.push(DocumentElement::HtmlBlockquote { text });
+            blockquotes.push(DocumentElement::Blockquote { text });
         }
     }
     blockquotes
@@ -267,7 +267,7 @@ pub fn extract_lists(htmldocument: &Html) -> Vec<DocumentElement> {
             .collect();
         
         if !items.is_empty() {
-            lists.push(DocumentElement::HtmlList { items, ordered: false });
+            lists.push(DocumentElement::List { items, ordered: false });
         }
     }
     
@@ -282,7 +282,7 @@ pub fn extract_lists(htmldocument: &Html) -> Vec<DocumentElement> {
             .collect();
         
         if !items.is_empty() {
-            lists.push(DocumentElement::HtmlList { items, ordered: true });
+            lists.push(DocumentElement::List { items, ordered: true });
         }
     }
     
@@ -317,7 +317,7 @@ fn extract_tables(htmldocument: &Html) -> Vec<DocumentElement> {
         }
         
         if !headers.is_empty() || !rows.is_empty() {
-            tables.push(DocumentElement::HtmlTable { headers, rows });
+            tables.push(DocumentElement::Table { headers, rows });
         }
     }
     
@@ -337,7 +337,7 @@ fn extract_code_blocks(htmldocument: &Html) -> Vec<DocumentElement> {
             let code = code_elem.text().collect::<String>();
             let language = extract_code_language(&code_elem);
             
-            code_blocks.push(DocumentElement::HtmlCode { 
+            code_blocks.push(DocumentElement::Code { 
                 code, 
                 language, 
                 inline: false 
@@ -345,7 +345,7 @@ fn extract_code_blocks(htmldocument: &Html) -> Vec<DocumentElement> {
         } else {
             // No <code> inside <pre>, just use the pre content
             let code = pre_element.text().collect::<String>();
-            code_blocks.push(DocumentElement::HtmlCode { 
+            code_blocks.push(DocumentElement::Code { 
                 code, 
                 language: None, 
                 inline: false 
@@ -372,7 +372,7 @@ fn extract_inline_codes(htmldocument: &Html) -> Vec<DocumentElement> {
         let code = element.text().collect::<String>().trim().to_string();
         
         if !code.is_empty() {
-            inline_codes.push(DocumentElement::HtmlCode { 
+            inline_codes.push(DocumentElement::Code { 
                 code, 
                 language: None, 
                 inline: true 
@@ -393,7 +393,7 @@ fn extract_links(htmldocument: &Html) -> Vec<DocumentElement> {
         let text = element.text().collect::<String>().trim().to_string();
         
         if !url.is_empty() && !text.is_empty() {
-            links.push(DocumentElement::HtmlLink { text, url });
+            links.push(DocumentElement::Link { text, url });
         }
     }
     
@@ -409,8 +409,9 @@ fn extract_image_descriptions(htmldocument: &Html) -> Vec<DocumentElement> {
         // Extract alt text
         if let Some(alt) = element.value().attr("alt") {
             if !alt.trim().is_empty() && alt != "image" && alt != "photo" {
-                image_descriptions.push(DocumentElement::HtmlImageDescription { 
-                    text: alt.to_string() 
+                image_descriptions.push(DocumentElement::Image { 
+                    alt: alt.to_string(),
+                    url: element.value().attr("src").map(|s| s.to_string())
                 });
             }
         }
@@ -424,8 +425,9 @@ fn extract_image_descriptions(htmldocument: &Html) -> Vec<DocumentElement> {
                     if caption.parent().map_or(false, |p| p == parent) {
                         let caption_text = caption.text().collect::<String>().trim().to_string();
                         if !caption_text.is_empty() {
-                            image_descriptions.push(DocumentElement::HtmlImageDescription { 
-                                text: caption_text 
+                            image_descriptions.push(DocumentElement::Image { 
+                                alt: caption_text,
+                                url: None
                             });
                         }
                         break; // Found the caption for this image

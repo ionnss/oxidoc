@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let elements = parse_html_file(html_file_path)?;
     
     // Export to JSONL
-    let jsonl_content = export_to_jsonl(&elements, "sample.html")?;
+    let jsonl_content = export_to_jsonl(&elements, "sample.html", "html")?;
     let jsonl_path = save_to_downloads_jsonl(&jsonl_content, "oxidoc_sample")?;
     
     // Export to TXT

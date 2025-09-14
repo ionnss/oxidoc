@@ -8,132 +8,138 @@ use crate::converters::converter_types::{TrainingRecord, RecordMetadata};
 
 pub fn export_to_jsonl(
     elements: &[DocumentElement], 
-    source_file: &str
+    source_file: &str,
+    document_type: &str
 ) -> Result<String, Box<dyn std::error::Error>> {
     let mut jsonl_lines = Vec::new();
     
     for element in elements {
         let record = match element {
-            DocumentElement::HtmldocumentTitle { text } => {
+            DocumentElement::Title { text } => {
                 TrainingRecord {
                     text: text.clone(),
                     element_type: "title".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmldocumentDescription { text } => {
+            DocumentElement::Description { text } => {
                 TrainingRecord {
                     text: text.clone(),
                     element_type: "description".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmlHeading { level, text } => {
+            DocumentElement::Heading { level, text } => {
                 TrainingRecord {
                     text: text.clone(),
                     element_type: format!("heading_{}", level),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmlParagraph { text } => {
+            DocumentElement::Paragraph { text } => {
                 TrainingRecord {
                     text: text.clone(),
                     element_type: "paragraph".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmlBlockquote { text } => {
+            DocumentElement::Blockquote { text } => {
                 TrainingRecord {
                     text: text.clone(),
                     element_type: "blockquote".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmlList { items, ordered } => {
+            DocumentElement::List { items, ordered } => {
                 let list_text = items.join(" | ");
                 TrainingRecord {
                     text: list_text.clone(),
                     element_type: if *ordered { "ordered_list".to_string() } else { "unordered_list".to_string() },
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: list_text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmlCode { code, language, inline } => {
+            DocumentElement::Code { code, language, inline } => {
                 TrainingRecord {
                     text: code.clone(),
                     element_type: if *inline { "inline_code".to_string() } else { "code_block".to_string() },
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: code.len(),
                         language: language.clone(),
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmlLink { text, url } => {
+            DocumentElement::Link { text, url } => {
                 let link_text = format!("{} -> {}", text, url);
                 TrainingRecord {
                     text: link_text.clone(),
                     element_type: "link".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: link_text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmlImageDescription { text } => {
+            DocumentElement::Image { alt, url } => {
+                let image_text = if let Some(url) = url {
+                    format!("{} ({})", alt, url)
+                } else {
+                    alt.clone()
+                };
                 TrainingRecord {
-                    text: text.clone(),
-                    element_type: "image_description".to_string(),
+                    text: image_text.clone(),
+                    element_type: "image".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
-                        content_length: text.len(),
+                        document_type: document_type.to_string(),
+                        content_length: image_text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmlTable { headers, rows } => {
+            DocumentElement::Table { headers, rows } => {
                 let mut table_text = format!("Headers: {} | ", headers.join(", "));
                 for row in rows {
                     table_text.push_str(&format!("Row: {} | ", row.join(", ")));
@@ -143,46 +149,46 @@ pub fn export_to_jsonl(
                     element_type: "table".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: table_text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmldocumentKeywords { text } => {
+            DocumentElement::Keywords { text } => {
                 TrainingRecord {
                     text: text.clone(),
                     element_type: "keywords".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmldocumentAuthor { text } => {
+            DocumentElement::Author { text } => {
                 TrainingRecord {
                     text: text.clone(),
                     element_type: "author".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: text.len(),
                         language: None,
                         timestamp: chrono::Utc::now().to_rfc3339(),
                     },
                 }
             },
-            DocumentElement::HtmldocumentLanguage { text } => {
+            DocumentElement::Language { text } => {
                 TrainingRecord {
                     text: text.clone(),
                     element_type: "language".to_string(),
                     metadata: RecordMetadata {
                         source_file: source_file.to_string(),
-                        document_type: "html".to_string(),
+                        document_type: document_type.to_string(),
                         content_length: text.len(),
                         language: Some(text.clone()),
                         timestamp: chrono::Utc::now().to_rfc3339(),

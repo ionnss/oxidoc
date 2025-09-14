@@ -14,23 +14,23 @@ pub fn export_to_txt(
     
     for element in elements {
         let txt_line = match element {
-            DocumentElement::HtmldocumentTitle { text } => {
+            DocumentElement::Title { text } => {
                 format!("TITLE: {}", text)
             },
-            DocumentElement::HtmldocumentDescription { text } => {
+            DocumentElement::Description { text } => {
                 format!("DESCRIPTION: {}", text)
             },
-            DocumentElement::HtmlHeading { level, text } => {
+            DocumentElement::Heading { level, text } => {
                 let prefix = "#".repeat(*level as usize);
                 format!("{} {}", prefix, text)
             },
-            DocumentElement::HtmlParagraph { text } => {
+            DocumentElement::Paragraph { text } => {
                 text.clone()
             },
-            DocumentElement::HtmlBlockquote { text } => {
+            DocumentElement::Blockquote { text } => {
                 format!("> {}", text)
             },
-            DocumentElement::HtmlList { items, ordered } => {
+            DocumentElement::List { items, ordered } => {
                 if *ordered {
                     items.iter().enumerate()
                         .map(|(i, item)| format!("{}. {}", i + 1, item))
@@ -43,7 +43,7 @@ pub fn export_to_txt(
                         .join("\n")
                 }
             },
-            DocumentElement::HtmlCode { code, language, inline } => {
+            DocumentElement::Code { code, language, inline } => {
                 if *inline {
                     format!("`{}`", code)
                 } else {
@@ -51,13 +51,17 @@ pub fn export_to_txt(
                     format!("```{}\n{}\n```", lang, code)
                 }
             },
-            DocumentElement::HtmlLink { text, url } => {
+            DocumentElement::Link { text, url } => {
                 format!("[{}]({})", text, url)
             },
-            DocumentElement::HtmlImageDescription { text } => {
-                format!("[IMAGE: {}]", text)
+            DocumentElement::Image { alt, url } => {
+                if let Some(url) = url {
+                    format!("[IMAGE: {} ({})]", alt, url)
+                } else {
+                    format!("[IMAGE: {}]", alt)
+                }
             },
-            DocumentElement::HtmlTable { headers, rows } => {
+            DocumentElement::Table { headers, rows } => {
                 let mut table_text = Vec::new();
                 
                 // Add headers
@@ -71,13 +75,13 @@ pub fn export_to_txt(
                 
                 table_text.join("\n")
             },
-            DocumentElement::HtmldocumentKeywords { text } => {
+            DocumentElement::Keywords { text } => {
                 format!("KEYWORDS: {}", text)
             },
-            DocumentElement::HtmldocumentAuthor { text } => {
+            DocumentElement::Author { text } => {
                 format!("AUTHOR: {}", text)
             },
-            DocumentElement::HtmldocumentLanguage { text } => {
+            DocumentElement::Language { text } => {
                 format!("LANGUAGE: {}", text)
             },
         };
