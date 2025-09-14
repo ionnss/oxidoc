@@ -53,6 +53,8 @@ pub fn extract_elements(htmldocument: &Html) -> Vec<HtmlElement> {
 
     // Extract different types of elements
     elements.extend(extract_headings(htmldocument));
+    elements.extend(extract_paragraphs(htmldocument));
+    elements.extend(extract_blockquotes(htmldocument));
     // TODO: Add more element extraction functions here
 
     // Return the elements
@@ -82,6 +84,64 @@ pub fn extract_headings(htmldocument: &Html) -> Vec<HtmlElement> {
     headings
 }
 
+pub fn extract_paragraphs(htmldocument:&Html) -> Vec<HtmlElement> {
+    let mut paragraphs= Vec::new();
+    let paragraph_selector = Selector::parse("p").unwrap();
 
+    for paragraph in htmldocument.select(&paragraph_selector) {
+        let text = paragraph.text().collect::<String>().trim().to_string();
+        if !text.is_empty() {
+            paragraphs.push(HtmlElement::Paragraph { text });
+        }
+    }
+    paragraphs
+}
+
+pub fn extract_blockquotes(htmldocument: &Html) -> Vec<HtmlElement> {
+    let mut blockquotes= Vec::new();
+    let blockquote_selector = Selector::parse("blockquote").unwrap();
+
+    for blockquote in htmldocument.select(&blockquote_selector) {
+        let text = blockquote.text().collect::<String>().trim().to_string();
+        if !text.is_empty() {
+            blockquotes.push(HtmlElement::Blockquote { text });
+        }
+    }
+    blockquotes
+}
+
+pub fn extract_lists(htmldocument: &Html) -> Vec<HtmlElement> {
+    let mut lists = Vec::new();
+
+    // Extract unordered lists
+    let ul_selector = Selector::parse("ul").unwrap();
+    for ul_element in htmldocument.select(&ul_selector) {
+        let li_selector = Selector::parse("li").unwrap();
+        let items: Vec<String> = ul_element.select(&li_selector)
+            .map(|li| li.text().collect::<String>().trim().to_string())
+            .filter(|item| !item.is_empty())
+            .collect();
+        
+        if !items.is_empty() {
+            lists.push(HtmlElement::List { items, ordered: false });
+        }
+    }
+    
+    // Extract ordered lists
+    let ol_selector = Selector::parse("ol").unwrap();
+    for ol_element in htmldocument.select(&ol_selector) {
+        let li_selector = Selector::parse("li").unwrap();
+        let items: Vec<String> = ol_element.select(&li_selector)
+            .map(|li| li.text().collect::<String>().trim().to_string())
+            .filter(|item| !item.is_empty())
+            .collect();
+        
+        if !items.is_empty() {
+            lists.push(HtmlElement::List { items, ordered: true });
+        }
+    }
+    
+    lists
+}
 
 
