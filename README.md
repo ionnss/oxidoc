@@ -4,7 +4,7 @@
   
   <br>
   
-  <h3>Rust-powered document distillation.</h3>
+  <h3>Rust-powered document distillation 🦀</h3>
 
   <br>
 
@@ -30,14 +30,32 @@ It draws inspiration from tools like Docling, but is built entirely in Rust, foc
 
 ## ✨ Features (Roadmap)
 
-- 📝 Parse **TXT** and **Markdown**
-- 📄 Extract text from **DOCX, PPTX, XLSX, HTML**
-- 📑 Basic **PDF parsing**
-- 🖼️ OCR support for **scanned PDFs and images**
-- 🎙️ **Audio transcription** with Whisper
-- 📊 Preserve **tables, code blocks, and metadata**
-- ⚡ Batch processing with parallelization
-- 🤖 AI integrations (LangChain-rs, LlamaIndex-rs)
+### Phase 1 - Core Parsing (Current)
+- [x] Parse **HTML** files with full element extraction
+- [x] Extract **metadata** (title, description, keywords, author, language)
+- [x] Parse **headings, paragraphs, lists, tables, code blocks, links, images**
+- [ ] Parse **TXT** files
+- [ ] Parse **Markdown** files
+- [ ] Export to **JSONL** format for AI training
+- [ ] Export to **plain text** format
+
+### Phase 2 - Office Formats
+- [ ] Extract text from **DOCX** files
+- [ ] Extract text from **PPTX** files  
+- [ ] Extract text from **XLSX** files
+- [ ] Basic **PDF parsing** (text extraction)
+
+### Phase 3 - Advanced Features
+- [ ] **Batch processing** with parallelization
+- [ ] **CLI interface** with command-line arguments
+- [ ] **File discovery** with directory traversal
+- [ ] **Output format options** (JSONL, TXT, JSON)
+
+### Phase 4 - Future Enhancements
+- [ ] **OCR support** for scanned PDFs and images
+- [ ] **Audio transcription** with Whisper integration
+- [ ] **Metadata extraction** (creation date, file size, etc.)
+- [ ] **Plugin system** for custom parsers
 
 ---
 
@@ -61,26 +79,15 @@ SOON
 
 ---
 
-## 📂 Project Structure
-
-```bash
-SOON
-```
-
----
-
 ## 🛠️ Contributing
 
-Contributions are welcome! Please open an issue or submit a PR if you’d like to help improve **Oxidoc**.
+Contributions are welcome! Please open an issue or submit a PR if you'd like to help improve **Oxidoc**.
 
 ---
 
 ## 📜 License
 
-```bash
-SOON
-
-```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
