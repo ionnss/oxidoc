@@ -1,9 +1,12 @@
 
 <div align="center">
   <img src="/assets/logo.png" alt="Oxidoc Logo" width="300"/>
+  
+  <br>
+  
   <h3>Rust-powered document distillation.</h3>
 
-  <br><br>
+  <br>
 
   [![Rust](https://img.shields.io/badge/rust-stable-orange.svg)](https://www.rust-lang.org/)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
