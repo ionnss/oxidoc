@@ -34,16 +34,14 @@ It draws inspiration from tools like Docling, but is built entirely in Rust, foc
 - [x] Parse **HTML** files with full element extraction
 - [x] Extract **metadata** (title, description, keywords, author, language)
 - [x] Parse **headings, paragraphs, lists, tables, code blocks, links, images**
-- [ ] Parse **TXT** files
-- [ ] Parse **Markdown** files
+- [x] Parse **PDF** files
 - [x] Export to **JSONL** format for AI training
 - [x] Export to **plain text** format
 
 ### Phase 2 - Office Formats
-- [ ] Extract text from **DOCX** files
-- [ ] Extract text from **PPTX** files  
-- [ ] Extract text from **XLSX** files
-- [ ] Basic **PDF parsing** (text extraction)
+- [ ] Parse/Extract text from **DOCX** files
+- [ ] Parse/Extract text from **PPTX** files  
+- [ ] Parse/Extract text from **XLSX** files
 
 ### Phase 3 - Advanced Features
 - [ ] **Batch processing** with parallelization
@@ -54,8 +52,8 @@ It draws inspiration from tools like Docling, but is built entirely in Rust, foc
 ### Phase 4 - Future Enhancements
 - [ ] **OCR support** for scanned PDFs and images
 - [ ] **Audio transcription** with Whisper integration
-- [ ] **Metadata extraction** (creation date, file size, etc.)
 - [ ] **Plugin system** for custom parsers
+- [ ] **AI** table extraction from pdf files
 
 ---
 
